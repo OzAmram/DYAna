@@ -31,8 +31,7 @@
 const int type = FLAG_ELECTRONS;
 //const int year = 2018;
 const bool write_out = true;
-//char *plot_dir = "Paper_plots/prefit_kinematics/";
-char *plot_dir = "AN_plots/prefit_kinematics/";
+char *plot_dir = "AN_plots/prefit_kinematics_test_noptrw/";
 //char *plot_label = "Electrons: With Prefire Correction";
 char *plot_label = "";
 

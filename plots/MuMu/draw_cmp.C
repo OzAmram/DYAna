@@ -34,7 +34,7 @@ const int type = FLAG_MUONS;
 //const int year = 2016;
 
 const bool write_out = true;
-char *plot_dir = "AN_plots/prefit_kinematics/";
+char *plot_dir = "AN_plots/prefit_kinematics_test_noptrw/";
 
 //const bool write_out = false;
 //char *plot_dir = "Paper_plots/prefit_kinematics/";
@@ -54,7 +54,7 @@ for(int year = 2016; year<=2018; year++){
     setup_all_SFs(year);
 
     int n_pt_bins1 = 7;
-    Float_t pt_bins1[] = {0., 10., 20., 30., 50., 70., 100., 300., 700. };
+    Float_t pt_bins1[] = {0., 10., 20., 30., 50., 70., 100., 300.};
 
     TH1F *dy_pt = new TH1F("dy_pt", "dy signal", n_pt_bins1, pt_bins1);
     TH1F *dy_tautau_pt = new TH1F("dy_tautau_pt", "dy signal", n_pt_bins1, pt_bins1);
@@ -183,9 +183,10 @@ for(int year = 2016; year<=2018; year++){
     float m_low = 500.;
     float m_high = 13000;
     bool ss = false;
+    bool dy_ptrw = false;
 
     make_m_cost_pt_xf_hist(t_mumu_data, data_m, data_cost, data_pt, data_xf, data_phi, data_rap, true, type,  year, m_low, m_high);
-    make_m_cost_pt_xf_hist(t_mumu_mc, dy_m, dy_cost, dy_pt, dy_xf, dy_phi, dy_rap,              false, type,   year, m_low, m_high);
+    make_m_cost_pt_xf_hist(t_mumu_mc, dy_m, dy_cost, dy_pt, dy_xf, dy_phi, dy_rap,              false, type,   year, m_low, m_high, false, dy_ptrw);
     make_m_cost_pt_xf_hist(t_mumu_tautau, dy_tautau_m, dy_tautau_cost, dy_tautau_pt, dy_tautau_xf, dy_tautau_phi, dy_tautau_rap, false, type,  year, m_low, m_high);
     make_m_cost_pt_xf_hist(t_mumu_ttbar, ttbar_m, ttbar_cost, ttbar_pt, ttbar_xf, ttbar_phi, ttbar_rap, false, type,  year, m_low, m_high);
     make_m_cost_pt_xf_hist(t_mumu_wt, wt_m, wt_cost, wt_pt, wt_xf, wt_phi, wt_rap, false, type,  year, m_low, m_high);
@@ -405,7 +406,7 @@ for(int year = 2016; year<=2018; year++){
 
     logy = true;
     //sprintf(y_ax_label, "Events/%.0f GeV", pt_bin_size);
-    std::tie(c_pt, p_pt) = make_stack_ratio_plot(data_pt, pt_stack, leg3, "pt", "dimuon pt (GeV)","", plot_label, -1., logy, logx, false, 0.2);
+    std::tie(c_pt, p_pt) = make_stack_ratio_plot(data_pt, pt_stack, leg3, "pt", "dimuon pt (GeV)","", plot_label, -1., logy, logx, false, ratio_range);
     CMS_lumi(p_pt, year, 33);
     sprintf(plt_file, "%sMuMu%i_pt_cmp.pdf", plot_dir, year % 2000);
     if(write_out) c_pt->Print(plt_file);

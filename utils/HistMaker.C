@@ -137,7 +137,7 @@ void make_emu_m_cost_pt_rap_hist(TTree *t1, TH1F *h_m, TH1F *h_cost, TH1F *h_pt,
 
 void make_m_cost_pt_xf_hist(TTree *t1, TH1F *h_m, TH1F *h_cost, TH1F *h_pt, TH1F *h_xf, TH1F *h_phi, TH1F *h_rap,
         bool is_data=false, int flag1 = FLAG_MUONS,
-        int year = 2016, Double_t m_low = 150., Double_t m_high = 9999999., bool ss = false){
+        int year = 2016, Double_t m_low = 150., Double_t m_high = 9999999., bool ss = false, bool ptrw = false){
         h_m->Sumw2();
         h_cost->Sumw2();
         h_pt->Sumw2();
@@ -149,6 +149,7 @@ void make_m_cost_pt_xf_hist(TTree *t1, TH1F *h_m, TH1F *h_cost, TH1F *h_pt, TH1F
         if(flag1 == FLAG_MUONS) tm.do_muons = true;
         else tm.do_electrons = true;
         tm.do_RC = true;
+        tm.do_ptrw = ptrw;
 
 
         tm.setup();

@@ -29,11 +29,11 @@
 
 
 
-const int year = 2018;
-char *out_file = "../analyze/SFs/2018/pt_rw.root";
+const int year = 2016;
+char *out_file = "../analyze/SFs/2016/pt_rw_LQ_test.root";
 const bool write_out = true;
-//char *plot_dir = "Misc_plots/pt_reweights/";
-char *plot_dir = "Paper_plots/pt_reweights/";
+char *plot_dir = "Misc_plots/pt_reweights_test2/";
+//char *plot_dir = "Paper_plots/pt_reweights/";
 
 
 
@@ -59,25 +59,33 @@ void do_pt_reweight(){
     TFile *f_out;
     if(write_out) f_out = TFile::Open(out_file, "RECREATE");
 
-    for(int i=0; i< n_m_bins-1; i++){
+    int n_pt_bins1 = 8;
+    Float_t pt_bins1[] = {0., 10., 20., 30., 50., 70., 100., 200., 10000.};
 
-        TH1F *data_mumu_pt = new TH1F("data_mumu_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *mc_mumu_pt = new TH1F("mc_mumu_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *bkg_mumu_pt = new TH1F("bkg_mumu_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *QCD_mumu_pt = new TH1F("QCD_mumu_pt", "pt reweight", n_pt_bins, pt_bins);
+    int i = 5;
+    //float m_low = m_bins1[i];
+    //float m_high = m_bins1[i+1];
+    float m_low = 350.;
+    float m_high = 500.;
+    printf("Mlow %.0f Mhigh %.0f \n", m_low, m_high);
 
-        TH1F *data_elel_pt = new TH1F("data_elel_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *mc_elel_pt = new TH1F("mc_elel_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *bkg_elel_pt = new TH1F("bkg_elel_pt", "pt reweight", n_pt_bins, pt_bins);
-        TH1F *QCD_elel_pt = new TH1F("QCD_elel_pt", "pt reweight", n_pt_bins, pt_bins);
+
+
+        TH1F *data_mumu_pt = new TH1F("data_mumu_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *mc_mumu_pt = new TH1F("mc_mumu_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *bkg_mumu_pt = new TH1F("bkg_mumu_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *QCD_mumu_pt = new TH1F("QCD_mumu_pt", "pt reweight", n_pt_bins1, pt_bins1);
+
+        TH1F *data_elel_pt = new TH1F("data_elel_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *mc_elel_pt = new TH1F("mc_elel_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *bkg_elel_pt = new TH1F("bkg_elel_pt", "pt reweight", n_pt_bins1, pt_bins1);
+        TH1F *QCD_elel_pt = new TH1F("QCD_elel_pt", "pt reweight", n_pt_bins1, pt_bins1);
 
         TH1F *h_dummy = new TH1F("h_dummy", "", 100, 0, 100);
 
 
         //setup_all_SFs(year);
 
-        float m_low = m_bins[i];
-        float m_high = m_bins[i+1];
         //merge last 2 mass bins b/c low stats
         if(i == n_m_bins-2) m_high = m_bins[i+2];
         //m_low = 150.;
@@ -217,7 +225,6 @@ void do_pt_reweight(){
             h_mumu_data_sub->Write();
             h_comb_data_sub->Write();
         }
-    }
 
 
 }

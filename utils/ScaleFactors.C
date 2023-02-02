@@ -242,6 +242,55 @@ float get_emu_costrw_SF(emu_costrw_helper h, float cost, float m, int systematic
     return correction;
 }
 
+float get_LQ_ptrw_SF(ptrw_helper h, float m, float pt, int systematic = 0, bool muons = true){
+    TH1F *h_rw, *h_N;
+    //only use single mass bin, use OPPOSITE channel for correction
+    if(muons){
+        h_rw = h.el_rw[5];
+        h_N = h.el_data_sub[5];
+    }
+
+    else{
+        h_rw = h.mu_rw[5];
+        h_N = h.el_data_sub[5];
+    }
+
+    TAxis* x_ax =  h_rw->GetXaxis();
+    int bin = h_rw->FindBin(pt);
+    float correction = h_rw->GetBinContent(bin);
+    //one systematic for each pt bin
+    if(systematic != 0){
+        int sys_bin = abs(systematic);
+        float stat_err = h_rw->GetBinError(sys_bin);
+        //Low stat bins should not go crazy
+        stat_err = max(stat_err, 0.1f);
+        //float sys_correction = h_rw->GetBinContent(sys_bin);
+        //float sys_err = 0.2 * std::fabs( sys_correction - 1.);
+        //float error = pow(stat_err * stat_err + sys_err * sys_err, 0.5);
+        float error = stat_err;
+
+        if(bin == abs(systematic)){
+            //shift the reweighting in this bin by the error
+            if(systematic >0) correction += error;
+            if(systematic <0) correction -= error;
+        }
+        else{
+            //shift other bins to account for changing normalization
+            float delta_N;
+            if(systematic > 0) delta_N = error * h_N->GetBinContent(sys_bin);
+            if(systematic < 0) delta_N = -error * h_N->GetBinContent(sys_bin);
+            float integral = h_N->Integral();
+            float ratio = integral/(integral + delta_N);
+            correction *= ratio;
+        }
+
+
+    }
+
+
+    
+    return correction;
+}
 
 
 float get_ptrw_SF(ptrw_helper h, float m, float pt, int systematic = 0){
@@ -741,6 +790,38 @@ void setup_LQ_rw_helper(LQ_rw_helper *h_lq, int year){
 
     f->Close();
 }
+
+void setup_LQ_ptrw_helper(ptrw_helper *h, int year){
+    TFile *f;
+
+    if(year == 2016) f = TFile::Open("../analyze/SFs/2016/pt_rw_LQ.root");
+    else if(year == 2017) f = TFile::Open("../analyze/SFs/2017/pt_rw_LQ.root");
+    else if(year == 2018) f = TFile::Open("../analyze/SFs/2018/pt_rw_LQ.root");
+    int i = 5;
+    char h_name[100];
+    sprintf(h_name, "elel%i_m%i_pt_ratio", year % 2000, i);
+    h->el_rw[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->el_rw[i]->SetDirectory(0);
+    sprintf(h_name, "mumu%i_m%i_pt_ratio", year % 2000, i);
+    h->mu_rw[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->mu_rw[i]->SetDirectory(0);
+    sprintf(h_name, "comb%i_m%i_pt_ratio", year % 2000, i);
+    h->comb_rw[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->comb_rw[i]->SetDirectory(0);
+
+    sprintf(h_name, "elel%i_m%i_pt_data_sub", year % 2000, i);
+    h->el_data_sub[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->el_data_sub[i]->SetDirectory(0);
+    sprintf(h_name, "mumu%i_m%i_pt_data_sub", year % 2000, i);
+    h->mu_data_sub[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->mu_data_sub[i]->SetDirectory(0);
+    sprintf(h_name, "comb%i_m%i_pt_data_sub", year % 2000, i);
+    h->comb_data_sub[i] = (TH1F *) f->Get(h_name)->Clone();
+    h->comb_data_sub[i]->SetDirectory(0);
+}
+
+
+
 
 void setup_ptrw_helper(ptrw_helper *h, int year){
     TFile *f;
